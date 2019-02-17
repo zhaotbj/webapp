@@ -1,11 +1,10 @@
 <template>
   <div class="recommend">
-    <header-nav></header-nav>
+    <header-nav :tabIndex="0"></header-nav>
 
     <Swiper>
-      <swiper-item v-for="(item, index) in recommendList" :key="index">
-        <!-- <img :src="item.img" alt=""> -->
-        <!-- <img src="../assets/images/1.jpg" alt=""> -->
+      <swiper-item v-for="(item, index) in bannerData" :key="index">
+        <img class="banner_img" :src="item.imageUrl" alt="">
       </swiper-item>
     </Swiper>
     <div class="re-songList">
@@ -44,32 +43,29 @@
   </div>
 </template>
 <script>
-import headerNav from "../components/headerNav";
-import { Swiper, SwiperItem } from "vux";
+import headerNav from "../components/headerNav"
+import { Swiper, SwiperItem } from "vux"
 
 export default {
   components: { headerNav, Swiper, SwiperItem },
   data() {
     return {
-      recommendList: [
-        {
-          url: "javascript:",
-          img: "../assets/images/1.jpg",
-          title: "送你一朵fua"
-        },
-        {
-          url: "javascript:",
-          img: "../assets/images/2.jpg",
-          title: "送你一次旅行",
-          fallbackImg: ""
-        }
-      ]
+      bannerData: [] ,
+      recommendList: []
     };
   },
   created() {
+    this.getBanner()
     this.initRecommend();
   },
   methods: {
+    getBanner() {
+      this.$http.get("/banner").then((res)=> {
+        if(res.status===200) {
+          this.bannerData = res.data.banners;
+        }
+      })
+    },
     initRecommend() {
       this.$http.get("/top/playlist?limit=10&order=new").then((res)=> {
         if(res.status ===200) {
@@ -83,6 +79,12 @@ export default {
 <style lang="less">
 @import "../assets/style/mixins";
 .recommend {
+  .vux-slider {
+    margin-top: 0.92rem;
+    .banner_img {
+      width: 100%;
+    }
+  }
   .re-songList {
     .list-item {
       color: #333;
